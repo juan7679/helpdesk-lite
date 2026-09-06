@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="description"
+        content="HelpDesk Lite - Sistema de gestion de tickets de soporte tecnico">
+    <title>HelpDesk Lite</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+    <header class="header">
+        <nav class="navbar container">
+            <a href="#Dashboard" class="logo">HelpDesk Lite</a>
+
+            <button id="new-ticket-button" class="button button-primary">
+                + Nuevo Ticket
+            </button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="Dashboard" class="dashboard-section container">
+            <div class="dashboard-grid">
+                <article class="dashboard-card">
+                    <span class="dashboard-label">Total</span>
+                    <span id="total-count" class="dashboard-number">0</span>
+                </article>
+
+                <article class="dashboard-card">
+                    <span class="dashboard-label">Nuevos</span>
+                    <span id="new-count" class="dashboard-number">0</span>
+                </article>
+
+                <article class="dashboard-card">
+                    <span class="dashboard-label">En Proceso</span>
+                    <span id="progress-count" class="dashboard-number">0</span>
+                </article>
+
+                <article class="dashboard-card">
+                    <span class="dashboard-label">Resueltos</span>
+                    <span id="resolved-count" class="dashboard-number">0</span>
+                </article>
+            </div>
+        </section>
+
+        <section id="NuevoTicket" class="form-section container hidden">
+            <div class="form-card">
+                <h2>Nuevo Ticket</h2>
+
+                <form id="ticket-form">
+                    <div class="form-group">
+                        <label for="title-input">Titulo</label>
+                        <input
+                            type="text"
+                            id="title-input"
+                            name="title"
+                            placeholder="Ej. Internet caido en laboratorio"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description-input">Descripcion</label>
+                        <textarea
+                            id="description-input"
+                            name="description"
+                            rows="3"
+                            placeholder="Describe el problema..."
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category-select">Categoria</label>
+                            <select id="category-select" name="category" required>
+                                <option value="Hardware">Hardware</option>
+                                <option value="Software">Software</option>
+                                <option value="Red">Red</option>
+                                <option value="Accesos">Accesos</option>
+                                <option value="Correo">Correo</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="priority-select">Prioridad</label>
+                            <select id="priority-select" name="priority" required>
+                                <option value="Baja">Baja</option>
+                                <option value="Media" selected>Media</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Critica">Critica</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="cancel-form-button" class="button button-secondary">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="button button-primary">
+                            Crear Ticket
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section id="Tickets" class="tickets-section container">
+            <div class="section-header">
+                <span class="section-label">Soporte Tecnico</span>
+                <h2>Tickets</h2>
+            </div>
+
+            <input
+                type="text"
+                id="search-input"
+                class="search-input"
+                placeholder="Buscar por folio, titulo o descripcion..."
+            >
+
+            <div class="filters">
+                <button class="filter-button active" data-status="Todos">Todos</button>
+                <button class="filter-button" data-status="Nuevo">Nuevo</button>
+                <button class="filter-button" data-status="En proceso">Proceso</button>
+                <button class="filter-button" data-status="Resuelto">Resuelto</button>
+                <button class="filter-button" data-status="Cerrado">Cerrado</button>
+            </div>
+
+            <select id="priority-filter" class="priority-filter">
+                <option value="Todas">Todas las prioridades</option>
+                <option value="Baja">Baja</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+                <option value="Critica">Critica</option>
+            </select>
+
+            <div id="tickets-container" class="tickets-grid"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p><strong>HelpDesk Lite</strong></p>
+            <p>Proyecto Academico - Aplicaciones de Internet</p>
+        </div>
+    </footer>
+
+    <script src="./js/app.js"></script>
+</body>
+</html>
