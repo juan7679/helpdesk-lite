@@ -39,6 +39,18 @@ const priorityFilter = document.querySelector('#priority-filter')
 let nextId = tickets.length + 1
 let currentStatusFilter = 'Todos'
 
+const statusFlow = {
+  'Nuevo': 'En proceso',
+  'En proceso': 'Resuelto',
+  'Resuelto': 'Cerrado'
+}
+
+const nextStatusLabel = {
+  'Nuevo': 'Iniciar Proceso',
+  'En proceso': 'Marcar Resuelto',
+  'Resuelto': 'Cerrar Ticket'
+}
+
 const formatDate = (isoString) => {
   const date = new Date(isoString)
   const day = String(date.getDate()).padStart(2, '0')
@@ -105,10 +117,22 @@ const renderTickets = (ticketsToRender) => {
         Estado: ${ticket.status.toUpperCase()}
       </span>
       <div class="ticket-actions">
+        ${nextStatusLabel[ticket.status] ? `
+          <button class="button button-primary advance-button" data-ticket-id="${ticket.id}">
+            ${nextStatusLabel[ticket.status]}
+          </button>
+        ` : ''}
+        ${ticket.status !== 'Cerrado' && ticket.status !== 'Cancelado' ? `
+          <button class="button button-secondary cancel-ticket-button" data-ticket-id="${ticket.id}">
+            Cancelar
+          </button>
+        ` : ''}
       </div>
     `
     ticketsContainer.appendChild(article)
   })
+
+  configureTicketActions()
 }
 
 const updateDashboard = () => {
@@ -116,6 +140,59 @@ const updateDashboard = () => {
   newCountLabel.textContent = tickets.filter((ticket) => ticket.status === 'Nuevo').length
   progressCountLabel.textContent = tickets.filter((ticket) => ticket.status === 'En proceso').length
   resolvedCountLabel.textContent = tickets.filter((ticket) => ticket.status === 'Resuelto').length
+}
+
+const advanceTicketStatus = (ticketId) => {
+  const ticket = tickets.find((currentTicket) => currentTicket.id === ticketId)
+
+  if (!ticket) {
+    return
+  }
+
+  const nextStatus = statusFlow[ticket.status]
+
+  if (!nextStatus) {
+    return
+  }
+
+  ticket.status = nextStatus
+  renderTickets(getFilteredTickets())
+  updateDashboard()
+}
+
+const cancelTicket = (ticketId) => {
+  const ticket = tickets.find((currentTicket) => currentTicket.id === ticketId)
+
+  if (!ticket) {
+    return
+  }
+
+  if (ticket.status === 'Cerrado' || ticket.status === 'Cancelado') {
+    return
+  }
+
+  ticket.status = 'Cancelado'
+  renderTickets(getFilteredTickets())
+  updateDashboard()
+}
+
+const configureTicketActions = () => {
+  const advanceButtons = document.querySelectorAll('.advance-button')
+  const cancelButtons = document.querySelectorAll('.cancel-ticket-button')
+
+  advanceButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const ticketId = Number(button.dataset.ticketId)
+      advanceTicketStatus(ticketId)
+    })
+  })
+
+  cancelButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const ticketId = Number(button.dataset.ticketId)
+      cancelTicket(ticketId)
+    })
+  })
 }
 
 newTicketButton.addEventListener('click', () => {
@@ -179,4 +256,3 @@ priorityFilter.addEventListener('change', () => {
 })
 
 renderTickets(getFilteredTickets())
-updateDashboard()
