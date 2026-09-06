@@ -133,5 +133,28 @@ ticketForm.addEventListener('submit', (event) => {
   updateDashboard()
 })
 
+const searchInput = document.querySelector('#search-input')
+
+const getFilteredTickets = () => {
+  const searchTerm = searchInput.value.trim().toLowerCase()
+
+  if (!searchTerm) {
+    return tickets
+  }
+
+  return tickets.filter((ticket) => {
+    return (
+      ticket.folio.toLowerCase().includes(searchTerm) ||
+      ticket.title.toLowerCase().includes(searchTerm) ||
+      ticket.description.toLowerCase().includes(searchTerm)
+    )
+  })
+}
+
+searchInput.addEventListener('input', () => {
+  const filteredTickets = getFilteredTickets()
+  renderTickets(filteredTickets)
+})
+
 renderTickets(tickets)
 updateDashboard()
