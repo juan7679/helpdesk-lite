@@ -27,6 +27,18 @@ const newCountLabel = document.querySelector('#new-count')
 const progressCountLabel = document.querySelector('#progress-count')
 const resolvedCountLabel = document.querySelector('#resolved-count')
 
+const ticketForm = document.querySelector('#ticket-form')
+const newTicketButton = document.querySelector('#new-ticket-button')
+const cancelFormButton = document.querySelector('#cancel-form-button')
+const formSection = document.querySelector('#NuevoTicket')
+
+const searchInput = document.querySelector('#search-input')
+const filterButtons = document.querySelectorAll('.filter-button')
+const priorityFilter = document.querySelector('#priority-filter')
+
+let nextId = tickets.length + 1
+let currentStatusFilter = 'Todos'
+
 const formatDate = (isoString) => {
   const date = new Date(isoString)
   const day = String(date.getDate()).padStart(2, '0')
@@ -35,6 +47,31 @@ const formatDate = (isoString) => {
   const hours = String(date.getHours()).padStart(2, '0')
   const minutes = String(date.getMinutes()).padStart(2, '0')
   return `${day}/${month}/${year} ${hours}:${minutes}`
+}
+
+const generateFolio = (id) => {
+  return `HD-${String(id).padStart(4, '0')}`
+}
+
+const getFilteredTickets = () => {
+  const searchTerm = searchInput.value.trim().toLowerCase()
+  const selectedPriority = priorityFilter.value
+
+  return tickets.filter((ticket) => {
+    const matchesSearch =
+      !searchTerm ||
+      ticket.folio.toLowerCase().includes(searchTerm) ||
+      ticket.title.toLowerCase().includes(searchTerm) ||
+      ticket.description.toLowerCase().includes(searchTerm)
+
+    const matchesStatus =
+      currentStatusFilter === 'Todos' || ticket.status === currentStatusFilter
+
+    const matchesPriority =
+      selectedPriority === 'Todas' || ticket.priority === selectedPriority
+
+    return matchesSearch && matchesStatus && matchesPriority
+  })
 }
 
 const renderTickets = (ticketsToRender) => {
@@ -81,17 +118,6 @@ const updateDashboard = () => {
   resolvedCountLabel.textContent = tickets.filter((ticket) => ticket.status === 'Resuelto').length
 }
 
-const ticketForm = document.querySelector('#ticket-form')
-const newTicketButton = document.querySelector('#new-ticket-button')
-const cancelFormButton = document.querySelector('#cancel-form-button')
-const formSection = document.querySelector('#NuevoTicket')
-
-let nextId = tickets.length + 1
-
-const generateFolio = (id) => {
-  return `HD-${String(id).padStart(4, '0')}`
-}
-
 newTicketButton.addEventListener('click', () => {
   formSection.classList.remove('hidden')
 })
@@ -129,32 +155,28 @@ ticketForm.addEventListener('submit', (event) => {
 
   ticketForm.reset()
   formSection.classList.add('hidden')
-  renderTickets(tickets)
+  renderTickets(getFilteredTickets())
   updateDashboard()
 })
 
-const searchInput = document.querySelector('#search-input')
-
-const getFilteredTickets = () => {
-  const searchTerm = searchInput.value.trim().toLowerCase()
-
-  if (!searchTerm) {
-    return tickets
-  }
-
-  return tickets.filter((ticket) => {
-    return (
-      ticket.folio.toLowerCase().includes(searchTerm) ||
-      ticket.title.toLowerCase().includes(searchTerm) ||
-      ticket.description.toLowerCase().includes(searchTerm)
-    )
-  })
-}
-
 searchInput.addEventListener('input', () => {
-  const filteredTickets = getFilteredTickets()
-  renderTickets(filteredTickets)
+  renderTickets(getFilteredTickets())
 })
 
-renderTickets(tickets)
+filterButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    filterButtons.forEach((currentButton) => {
+      currentButton.classList.remove('active')
+    })
+    button.classList.add('active')
+    currentStatusFilter = button.dataset.status
+    renderTickets(getFilteredTickets())
+  })
+})
+
+priorityFilter.addEventListener('change', () => {
+  renderTickets(getFilteredTickets())
+})
+
+renderTickets(getFilteredTickets())
 updateDashboard()
