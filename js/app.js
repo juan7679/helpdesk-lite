@@ -65,6 +65,24 @@ const generateFolio = (id) => {
   return `HD-${String(id).padStart(4, '0')}`
 }
 
+const saveTickets = () => {
+  localStorage.setItem('helpdeskTickets', JSON.stringify(tickets))
+  localStorage.setItem('helpdeskNextId', JSON.stringify(nextId))
+}
+
+const loadTickets = () => {
+  const storedTickets = JSON.parse(localStorage.getItem('helpdeskTickets'))
+  const storedNextId = JSON.parse(localStorage.getItem('helpdeskNextId'))
+
+  if (storedTickets) {
+    tickets = storedTickets
+  }
+
+  if (storedNextId) {
+    nextId = storedNextId
+  }
+}
+
 const getFilteredTickets = () => {
   const searchTerm = searchInput.value.trim().toLowerCase()
   const selectedPriority = priorityFilter.value
@@ -156,6 +174,7 @@ const advanceTicketStatus = (ticketId) => {
   }
 
   ticket.status = nextStatus
+  saveTickets()
   renderTickets(getFilteredTickets())
   updateDashboard()
 }
@@ -172,6 +191,7 @@ const cancelTicket = (ticketId) => {
   }
 
   ticket.status = 'Cancelado'
+  saveTickets()
   renderTickets(getFilteredTickets())
   updateDashboard()
 }
@@ -229,6 +249,7 @@ ticketForm.addEventListener('submit', (event) => {
 
   tickets.push(newTicket)
   nextId++
+  saveTickets()
 
   ticketForm.reset()
   formSection.classList.add('hidden')
@@ -255,4 +276,6 @@ priorityFilter.addEventListener('change', () => {
   renderTickets(getFilteredTickets())
 })
 
+loadTickets()
 renderTickets(getFilteredTickets())
+updateDashboard()
