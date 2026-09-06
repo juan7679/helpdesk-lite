@@ -51,6 +51,8 @@ const nextStatusLabel = {
   'Resuelto': 'Cerrar Ticket'
 }
 
+const finalStatuses = ['Cerrado', 'Cancelado']
+
 const formatDate = (isoString) => {
   const date = new Date(isoString)
   const day = String(date.getDate()).padStart(2, '0')
@@ -140,7 +142,7 @@ const renderTickets = (ticketsToRender) => {
             ${nextStatusLabel[ticket.status]}
           </button>
         ` : ''}
-        ${ticket.status !== 'Cerrado' && ticket.status !== 'Cancelado' ? `
+        ${!finalStatuses.includes(ticket.status) ? `
           <button class="button button-secondary cancel-ticket-button" data-ticket-id="${ticket.id}">
             Cancelar
           </button>
@@ -160,6 +162,10 @@ const updateDashboard = () => {
   resolvedCountLabel.textContent = tickets.filter((ticket) => ticket.status === 'Resuelto').length
 }
 
+const isValidTransition = (currentStatus, targetStatus) => {
+  return statusFlow[currentStatus] === targetStatus
+}
+
 const advanceTicketStatus = (ticketId) => {
   const ticket = tickets.find((currentTicket) => currentTicket.id === ticketId)
 
@@ -169,7 +175,7 @@ const advanceTicketStatus = (ticketId) => {
 
   const nextStatus = statusFlow[ticket.status]
 
-  if (!nextStatus) {
+  if (!nextStatus || !isValidTransition(ticket.status, nextStatus)) {
     return
   }
 
@@ -186,7 +192,7 @@ const cancelTicket = (ticketId) => {
     return
   }
 
-  if (ticket.status === 'Cerrado' || ticket.status === 'Cancelado') {
+  if (finalStatuses.includes(ticket.status)) {
     return
   }
 
