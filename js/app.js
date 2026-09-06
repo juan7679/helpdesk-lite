@@ -81,5 +81,57 @@ const updateDashboard = () => {
   resolvedCountLabel.textContent = tickets.filter((ticket) => ticket.status === 'Resuelto').length
 }
 
+const ticketForm = document.querySelector('#ticket-form')
+const newTicketButton = document.querySelector('#new-ticket-button')
+const cancelFormButton = document.querySelector('#cancel-form-button')
+const formSection = document.querySelector('#NuevoTicket')
+
+let nextId = tickets.length + 1
+
+const generateFolio = (id) => {
+  return `HD-${String(id).padStart(4, '0')}`
+}
+
+newTicketButton.addEventListener('click', () => {
+  formSection.classList.remove('hidden')
+})
+
+cancelFormButton.addEventListener('click', () => {
+  ticketForm.reset()
+  formSection.classList.add('hidden')
+})
+
+ticketForm.addEventListener('submit', (event) => {
+  event.preventDefault()
+
+  const title = document.querySelector('#title-input').value.trim()
+  const description = document.querySelector('#description-input').value.trim()
+  const category = document.querySelector('#category-select').value
+  const priority = document.querySelector('#priority-select').value
+
+  if (!title || !description) {
+    return
+  }
+
+  const newTicket = {
+    id: nextId,
+    folio: generateFolio(nextId),
+    title,
+    description,
+    category,
+    priority,
+    status: 'Nuevo',
+    createdAt: new Date().toISOString()
+  }
+
+  tickets.push(newTicket)
+  nextId++
+
+  ticketForm.reset()
+  formSection.classList.add('hidden')
+  renderTickets(tickets)
+  updateDashboard()
+})
+
 renderTickets(tickets)
 updateDashboard()
